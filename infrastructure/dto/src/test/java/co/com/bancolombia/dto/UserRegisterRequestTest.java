@@ -1,4 +1,4 @@
-package test.java.co.com.bancolombia.dto;
+package co.com.bancolombia.dto;
 
 import jakarta.validation.*;
 import org.junit.jupiter.api.BeforeEach;
