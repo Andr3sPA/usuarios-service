@@ -1,10 +1,16 @@
 package co.com.bancolombia.dto;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRegisterRequest {
 
     @NotBlank(message = "El nombre es obligatorio")
@@ -30,6 +36,9 @@ public class UserRegisterRequest {
     @NotBlank(message = "El correo electrónico es obligatorio")
     @Email(message = "Formato de correo inválido")
     private String correoElectronico;
+
+    @NotNull(message = "El rol es obligatorio")
+    private Long roleId;
 
     @NotNull(message = "El salario base es obligatorio")
     @Positive(message = "El salario base debe ser positivo")

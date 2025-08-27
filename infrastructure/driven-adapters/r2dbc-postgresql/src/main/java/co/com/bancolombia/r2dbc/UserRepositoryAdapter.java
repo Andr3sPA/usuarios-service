@@ -1,4 +1,5 @@
 package co.com.bancolombia.r2dbc;
+import co.com.bancolombia.exception.EmailAlreadyExistsException;
 import co.com.bancolombia.model.User;
 import co.com.bancolombia.model.gateways.UserRepository;
 import co.com.bancolombia.r2dbc.entity.UserEntity;
@@ -21,18 +22,26 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public Mono<User> register(User user) {
-        return roleRepo.findById(user.getRole().getId())
-                .map(roleMapper::toModel)
-                .flatMap(role -> {
-                    user.setRole(role);
-                    // 🔐 encriptar password antes de persistir
-                    user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepo.findByEmail(user.getEmail())
+                .hasElement()
+                .flatMap(exists -> {
+                    if (exists) {
+                        return Mono.error(new EmailAlreadyExistsException(user.getEmail()));
+                    }
 
-                    UserEntity entity = userMapper.toEntity(user);
-                    return userRepo.save(entity);
-                })
-                .map(userMapper::toModel);
+                    return roleRepo.findById(user.getRole().getId())
+                            .map(roleMapper::toModel)
+                            .flatMap(role -> {
+                                user.setRole(role);
+                                user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+                                UserEntity entity = userMapper.toEntity(user);
+                                return userRepo.save(entity);
+                            })
+                            .map(userMapper::toModel);
+                });
     }
+
 
     @Override
     public Mono<User> findByEmail(String email) {

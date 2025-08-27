@@ -1,5 +1,6 @@
 package co.com.bancolombia.api;
 import co.com.bancolombia.api.config.UserPath;
+import co.com.bancolombia.api.filter.GlobalExceptionFilter;
 import co.com.bancolombia.api.handler.HandlerUser;
 import co.com.bancolombia.model.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,16 +19,17 @@ import co.com.bancolombia.dto.UserRegisterRequest;
 import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
-
 @Configuration
 @RequiredArgsConstructor
 public class RouterRest {
+
     private final UserPath userPath;
+    private final GlobalExceptionFilter globalExceptionFilter; // 👈 inyectamos el filtro
 
     @Bean
     @RouterOperations({
             @RouterOperation(
-                    path = "/api/v1/usuarios",          // aquí el path expuesto
+                    path = "/api/v1/usuarios",
                     method = RequestMethod.POST,
                     beanClass = HandlerUser.class,
                     beanMethod = "registerUser",
@@ -58,7 +60,7 @@ public class RouterRest {
             )
     })
     public RouterFunction<ServerResponse> routerFunction(HandlerUser handlerUser) {
-        return route(POST(userPath.getUsers()),handlerUser::registerUser);
-
+        return route(POST(userPath.getUsers()), handlerUser::registerUser)
+                .filter(globalExceptionFilter); // 👈 aplicamos el filtro
     }
 }
