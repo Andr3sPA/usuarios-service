@@ -24,7 +24,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class RouterRest {
 
     private final UserPath userPath;
-    private final GlobalExceptionFilter globalExceptionFilter; // 👈 inyectamos el filtro
+    private final GlobalExceptionFilter globalExceptionFilter;
 
     @Bean
     @RouterOperations({
@@ -61,6 +61,6 @@ public class RouterRest {
     })
     public RouterFunction<ServerResponse> routerFunction(HandlerUser handlerUser) {
         return route(POST(userPath.getUsers()), handlerUser::registerUser)
-                .filter(globalExceptionFilter); // 👈 aplicamos el filtro
+                .filter(globalExceptionFilter);
     }
 }
