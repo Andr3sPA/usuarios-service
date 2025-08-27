@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,14 +37,14 @@ class UserRepositoryAdapterTest {
     void testRegister() {
         User user = new User();
         Role role = new Role();
-        role.setId("roleId");
+        role.setId(1L);
         user.setRole(role);
         user.setPassword("plainPassword");
 
         RoleEntity roleEntity = new RoleEntity();
         UserEntity userEntity = new UserEntity();
 
-        when(roleRepo.findById("roleId")).thenReturn(Mono.just(roleEntity));
+        when(roleRepo.findById(1L)).thenReturn(Mono.just(roleEntity));
         when(roleMapper.toModel(roleEntity)).thenReturn(role);
         when(userMapper.toEntity(any(User.class))).thenReturn(userEntity);
         when(userRepo.save(userEntity)).thenReturn(Mono.just(userEntity));
@@ -54,7 +53,7 @@ class UserRepositoryAdapterTest {
         Mono<User> result = adapter.register(user);
         User userResult = result.block();
         assertNotNull(userResult);
-        verify(roleRepo).findById("roleId");
+        verify(roleRepo).findById(1L);
         verify(roleMapper).toModel(roleEntity);
         verify(userMapper).toEntity(any(User.class));
         verify(userRepo).save(userEntity);
@@ -65,13 +64,13 @@ class UserRepositoryAdapterTest {
     void testFindByEmail() {
         String email = "test@example.com";
         UserEntity userEntity = new UserEntity();
-        userEntity.setRoleId("roleId");
+    userEntity.setRoleId(1L);
         RoleEntity roleEntity = new RoleEntity();
         User user = new User();
         Role role = new Role();
 
         when(userRepo.findByEmail(email)).thenReturn(Mono.just(userEntity));
-        when(roleRepo.findById("roleId")).thenReturn(Mono.just(roleEntity));
+    when(roleRepo.findById(1L)).thenReturn(Mono.just(roleEntity));
         when(userMapper.toModel(userEntity)).thenReturn(user);
         when(roleMapper.toModel(roleEntity)).thenReturn(role);
 
@@ -79,7 +78,7 @@ class UserRepositoryAdapterTest {
         User userResult = result.block();
         assertNotNull(userResult);
         verify(userRepo).findByEmail(email);
-        verify(roleRepo).findById("roleId");
+    verify(roleRepo).findById(1L);
         verify(userMapper).toModel(userEntity);
         verify(roleMapper).toModel(roleEntity);
     }

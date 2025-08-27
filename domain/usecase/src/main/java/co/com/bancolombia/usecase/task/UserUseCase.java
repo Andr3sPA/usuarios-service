@@ -1,13 +1,17 @@
 package co.com.bancolombia.usecase.task;
 import co.com.bancolombia.model.User;
 import co.com.bancolombia.model.gateways.UserRepository;
+import co.com.bancolombia.model.gateways.TransactionalGateway;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class UserUseCase {
     private final UserRepository repository;
+    private final TransactionalGateway transactionalGateway;
 
     public Mono<User> register(User user) {
-        return repository.register(user);
+        return transactionalGateway.transactional(
+            repository.register(user)
+        );
     }
 }

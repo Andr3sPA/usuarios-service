@@ -13,42 +13,42 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class UserRegisterRequest {
 
-    @NotBlank(message = "El nombre es obligatorio")
+    @NotBlank(message = "First name is required")
     @Size(min = 2, max = 50)
-    private String nombres;
+    private String firstName;
 
-    @NotBlank(message = "Los apellidos son obligatorios")
+    @NotBlank(message = "Last name is required")
     @Size(min = 2, max = 50)
-    private String apellidos;
+    private String lastName;
 
-    @NotNull(message = "La fecha de nacimiento es obligatoria")
-    @Past(message = "La fecha de nacimiento debe ser en el pasado")
-    private LocalDate fechaNacimiento;
+    @NotNull(message = "Birth date is required")
+    @Past(message = "Birth date must be in the past")
+    private LocalDate birthDate;
 
-    @NotBlank(message = "La dirección es obligatoria")
+    @NotBlank(message = "Address is required")
     @Size(min = 5, max = 100)
-    private String direccion;
+    private String address;
 
-    @NotBlank(message = "El teléfono es obligatorio")
-    @Pattern(regexp = "^[0-9]{7,15}$", message = "Debe tener entre 7 y 15 dígitos")
-    private String telefono;
+    @NotBlank(message = "Phone is required")
+    @Pattern(regexp = "^[0-9]{7,15}$", message = "Must be between 7 and 15 digits")
+    private String phone;
 
-    @NotBlank(message = "El correo electrónico es obligatorio")
-    @Email(message = "Formato de correo inválido")
-    private String correoElectronico;
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email format")
+    private String email;
 
-    @NotNull(message = "El rol es obligatorio")
+    @NotNull(message = "Role is required")
     private Long roleId;
 
-    @NotNull(message = "El salario base es obligatorio")
-    @Positive(message = "El salario base debe ser positivo")
-    private Double salarioBase;
+    @NotNull(message = "Base salary is required")
+    @Positive(message = "Base salary must be positive")
+    private Double baseSalary;
 
-    @NotBlank(message = "La contraseña es obligatoria")
-    @Size(min = 8, max = 72, message = "La contraseña debe tener entre 8 y 72 caracteres")
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, max = 72, message = "Password must be between 8 and 72 characters")
     @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).+$",
-            message = "Debe incluir mayúscula, minúscula, número y caracter especial"
+        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).+$",
+        message = "Must include uppercase, lowercase, number and special character"
     )
     private String password;
 }

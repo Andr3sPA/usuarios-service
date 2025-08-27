@@ -1,6 +1,6 @@
 package co.com.bancolombia.r2dbc.entity;
 
-import jakarta.validation.constraints.*;
+// import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,6 @@ public class RoleEntity {
     @Id
     private Long id;
 
-    @NotBlank
     private String name;
 
     private String description;

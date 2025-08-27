@@ -15,7 +15,14 @@ public class SecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/api/v1/usuarios").permitAll() // <-- tu endpoint de registro público
+                        .pathMatchers(
+                            "/api/v1/usuarios",
+                            "/swagger-ui.html",
+                            "/swagger-ui/**",
+                            "/v3/api-docs",
+                            "/v3/api-docs/**",
+                            "/webjars/**"
+                        ).permitAll()
                         .anyExchange().authenticated()
                 )
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable) // quita login con Basic Auth

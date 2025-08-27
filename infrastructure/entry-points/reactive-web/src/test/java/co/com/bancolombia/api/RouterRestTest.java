@@ -1,7 +1,11 @@
 package co.com.bancolombia.api;
 
-import co.com.bancolombia.model.Priority;
-import org.assertj.core.api.Assertions;
+import co.com.bancolombia.api.config.UserPath;
+import co.com.bancolombia.api.handler.HandlerUser;
+import co.com.bancolombia.dto.UserRegisterRequest;
+import co.com.bancolombia.model.Role;
+import co.com.bancolombia.model.User;
+import co.com.bancolombia.usecase.task.UserUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -10,15 +14,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.time.LocalDate;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {RouterRest.class, HandlerTask.class})
-@EnableConfigurationProperties(TaskPath.class)
+@ContextConfiguration(classes = {RouterRest.class, HandlerUser.class})
+@EnableConfigurationProperties(UserPath.class)
 @WebFluxTest
 class RouterRestTest {
 
@@ -26,115 +30,76 @@ class RouterRestTest {
     private WebTestClient webTestClient;
 
     @MockitoBean
-    private TaskUseCase taskUseCase;
-
-    private final String tasks = "/api/v1/tasks";
-    private final String tasksById = "/api/v1/tasks";
-
-    private final Task taskOne = Task.builder()
-            .id("1")
-            .title("Task 1")
-            .description("Description")
-            .priority(Priority.LOW)
-            .completed(false)
-            .build();
-
-    private final Task taskTwo = Task.builder()
-            .id("2")
-            .title("Task 2")
-            .description("Description")
-            .priority(Priority.LOW)
-            .completed(false)
-            .build();
+    private UserUseCase userUseCase;
 
     @Autowired
-    private TaskPath taskPath;
+    private UserPath userPath;
 
     @Test
-    void shouldLoadTaskPathProperties() {
-        assertEquals("/api/v1/tasks", taskPath.getTasks());
-        assertEquals("/api/v1/tasks/{id}", taskPath.getTasksById());
-    }
-
-    @Test
-    void shouldGetAllTasks() {
-
-        when(taskUseCase.getAllTasks()).thenReturn(Flux.just(taskOne, taskTwo));
-
-        webTestClient.get()
-                .uri(tasks)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBodyList(Task.class)
-                .hasSize(2)
-                .value(tasks -> {
-                    Assertions.assertThat(tasks).isNotEmpty();
-                    Assertions.assertThat(tasks.get(0).getId()).isEqualTo("1");
-                });
-
-    }
-
-    @Test
-    void shouldGetTaskById() {
-        String id = "1";
-
-        when(taskUseCase.getTaskById(id)).thenReturn(Mono.just(taskOne));
-
-        webTestClient.get()
-                .uri(tasks + "/" + id)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Task.class)
-                .value(response -> Assertions.assertThat(response.getId()).isEqualTo(id));
-    }
-
-    @Test
-    void shouldPostSaveTask() {
-
-        when(taskUseCase.saveTask(any(Task.class))).thenReturn(Mono.just(taskOne));
-
-        webTestClient.post()
-                .uri(tasks)
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(taskOne)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Task.class)
-                .value(saved -> Assertions.assertThat(saved.getTitle()).isEqualTo(taskOne.getTitle()));
-    }
-
-    @Test
-    void shouldPutUpdateTask() {
-        Task task = Task.builder()
-                .id("1")
-                .title("Task 1")
-                .description("Description")
-                .priority(Priority.HIGH)
-                .completed(true)
+    void shouldRegisterUser() {
+        UserRegisterRequest request = UserRegisterRequest.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .address("123 Main St")
+                .phone("1234567890")
+                .email("john.doe@example.com")
+                .roleId(1L)
+                .baseSalary(3000.0)
+                .password("Secure123!")
                 .build();
 
-        when(taskUseCase.updateTask(any(Task.class))).thenReturn(Mono.just(task));
+        User response = User.builder()
+                .id(1L)
+                .firstName("John")
+                .lastName("Doe")
+                .birthDate(LocalDate.of(1990, 1, 1))
+                .address("123 Main St")
+                .phone("1234567890")
+                .email("john.doe@example.com")
+                .role(Role.builder().id(1L).name("ADMIN").description("Administrator role").build())
+                .baseSalary(3000.0)
+                .password("hashedPassword")
+                .build();
 
-        webTestClient.put()
-                .uri(tasks)
+        when(userUseCase.register(any(User.class))).thenReturn(Mono.just(response));
+
+        webTestClient.post()
+                .uri(userPath.getUsers())
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(task)
+                .bodyValue(request)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(Task.class)
-                .value(updated -> Assertions.assertThat(updated.isCompleted()).isTrue());
+                .expectBody(User.class)
+                .consumeWith(result -> {
+                    User user = result.getResponseBody();
+                    assert user != null;
+                    org.assertj.core.api.Assertions.assertThat(user.getId()).isEqualTo(1L);
+                    org.assertj.core.api.Assertions.assertThat(user.getEmail()).isEqualTo("john.doe@example.com");
+                    org.assertj.core.api.Assertions.assertThat(user.getRole().getId()).isEqualTo(1L);
+                });
     }
 
     @Test
-    void shouldDeleteTask() {
-        String id = "1";
-        when(taskUseCase.deleteTask(id)).thenReturn(Mono.empty());
+    void shouldReturnBadRequestWhenInvalidRequest() {
+        UserRegisterRequest invalidRequest = UserRegisterRequest.builder()
+                .firstName("") // inválido
+                .lastName("D") // inválido (min 2 chars)
+                .birthDate(LocalDate.now().plusDays(1)) // inválido (future)
+                .address("x") // inválido
+                .phone("abc") // inválido
+                .email("bad-email") // inválido
+                .roleId(null) // inválido
+                .baseSalary(-100.0) // inválido
+                .password("123") // inválido
+                .build();
 
-        webTestClient.delete()
-                .uri(tasks + "/" + id)
+        webTestClient.post()
+                .uri(userPath.getUsers())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(invalidRequest)
                 .exchange()
-                .expectStatus().isNoContent();
+                .expectStatus().isBadRequest();
     }
 }
+
