@@ -38,8 +38,8 @@ public class UseCasesConfigTest {
         }
 
         @Bean
-        public TaskRepository taskRepository() {
-            return Mockito.mock(TaskRepository.class);
+        public UserRepository userRepository() {
+            return Mockito.mock(UserRepository.class);
         }
     }
 
