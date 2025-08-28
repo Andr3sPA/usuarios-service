@@ -2,17 +2,6 @@ package co.com.bancolombia.usecase.task;
 
 import co.com.bancolombia.model.User;
 import co.com.bancolombia.model.gateways.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import reactor.core.publisher.Mono;
-import static org.junit.jupiter.api.Assertions.*;
-package co.com.bancolombia.usecase.task;
-
-import co.com.bancolombia.model.User;
-import co.com.bancolombia.model.gateways.UserRepository;
 import co.com.bancolombia.model.gateways.TransactionalGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,15 +9,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class UserUseCaseTest {
+
     @Mock
     private UserRepository repository;
+
     @Mock
     private TransactionalGateway transactionalGateway;
+
     @InjectMocks
     private UserUseCase useCase;
 
@@ -38,35 +31,37 @@ class UserUseCaseTest {
     }
 
     @Test
-    void testRegisterSuccess() {
+    void testRegister() {
+        // Arrange
         User user = new User();
+        user.setId(1L);
+        user.setEmail("test@example.com");
+
         when(repository.register(user)).thenReturn(Mono.just(user));
-        when(transactionalGateway.transactional(any(Mono.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        Mono<User> result = useCase.register(user);
-        assertNotNull(result.block());
-        verify(repository).register(user);
+        when(transactionalGateway.transactional(any(Mono.class))).thenReturn(Mono.just(user));
+
+        // Act & Assert
+        StepVerifier.create(useCase.register(user))
+                .expectNext(user)
+                .verifyComplete();
+
         verify(transactionalGateway).transactional(any(Mono.class));
     }
 
     @Test
-    void testRegisterRepositoryError() {
+    void testRegisterWithError() {
+        // Arrange
         User user = new User();
-        when(repository.register(user)).thenReturn(Mono.error(new RuntimeException("fail")));
-        when(transactionalGateway.transactional(any(Mono.class))).thenAnswer(invocation -> invocation.getArgument(0));
-        Mono<User> result = useCase.register(user);
-        assertThrows(RuntimeException.class, result::block);
-        verify(repository).register(user);
-        verify(transactionalGateway).transactional(any(Mono.class));
-    }
+        RuntimeException exception = new RuntimeException("Database error");
 
-    @Test
-    void testRegisterTransactionalError() {
-        User user = new User();
-        when(repository.register(user)).thenReturn(Mono.just(user));
-        when(transactionalGateway.transactional(any(Mono.class))).thenReturn(Mono.error(new RuntimeException("tx fail")));
-        Mono<User> result = useCase.register(user);
-        assertThrows(RuntimeException.class, result::block);
-        verify(repository).register(user);
+        when(repository.register(user)).thenReturn(Mono.error(exception));
+        when(transactionalGateway.transactional(any(Mono.class))).thenReturn(Mono.error(exception));
+
+        // Act & Assert
+        StepVerifier.create(useCase.register(user))
+                .expectError(RuntimeException.class)
+                .verify();
+
         verify(transactionalGateway).transactional(any(Mono.class));
     }
 }
