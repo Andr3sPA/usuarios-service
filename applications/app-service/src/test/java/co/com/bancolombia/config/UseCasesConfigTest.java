@@ -1,6 +1,7 @@
 package co.com.bancolombia.config;
 
 import co.com.bancolombia.model.gateways.UserRepository;
+import co.com.bancolombia.model.gateways.TransactionalGateway;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -25,7 +26,7 @@ public class UseCasesConfigTest {
                 }
             }
 
-            assertTrue(useCaseBeanFound, "No beans ending with 'Use Case' were found");
+            assertTrue(useCaseBeanFound, "No beans ending with 'UseCase' were found");
         }
     }
 
@@ -34,13 +35,18 @@ public class UseCasesConfigTest {
     static class TestConfig {
 
         @Bean
-        public MyUseCase myUseCase() {
-            return new MyUseCase();
+        public UserRepository userRepository() {
+            return Mockito.mock(UserRepository.class);
         }
 
         @Bean
-        public UserRepository userRepository() {
-            return Mockito.mock(UserRepository.class);
+        public TransactionalGateway transactionalGateway() {
+            return Mockito.mock(TransactionalGateway.class);
+        }
+
+        @Bean
+        public MyUseCase myUseCase() {
+            return new MyUseCase();
         }
     }
 
