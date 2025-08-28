@@ -10,7 +10,7 @@ class UserTest {
         User user = User.builder()
                 .id(1L)
                 .firstName("Andres")
-                .lastName("Pena")
+                .lastName("Peña")
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .address("Calle 123")
                 .phone("123456789")
@@ -19,7 +19,7 @@ class UserTest {
                 .build();
         assertEquals(1L, user.getId());
         assertEquals("Andres", user.getFirstName());
-        assertEquals("Pena", user.getLastName());
+        assertEquals("Peña", user.getLastName());
         assertEquals(LocalDate.of(1990, 1, 1), user.getBirthDate());
         assertEquals("Calle 123", user.getAddress());
         assertEquals("123456789", user.getPhone());
