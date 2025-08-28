@@ -5,7 +5,6 @@ import co.com.bancolombia.model.Role;
 import co.com.bancolombia.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
 @Mapper(componentModel = "spring")
 public interface UserRequestMapper {
 
@@ -17,6 +16,6 @@ public interface UserRequestMapper {
     @Mapping(source = "email", target = "email")
     @Mapping(source = "baseSalary", target = "baseSalary")
     @Mapping(target = "role.id", source = "roleId")
+    @Mapping(target = "id", ignore = true) // Agregar esta línea
     User toModel(UserRegisterRequest dto);
-
 }
