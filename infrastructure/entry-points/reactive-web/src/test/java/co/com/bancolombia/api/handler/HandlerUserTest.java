@@ -1,7 +1,7 @@
 package co.com.bancolombia.api.handler;
 
 import co.com.bancolombia.model.User;
-import co.com.bancolombia.usecase.task.UserUseCase;
+import co.com.bancolombia.usecase.user.UserUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

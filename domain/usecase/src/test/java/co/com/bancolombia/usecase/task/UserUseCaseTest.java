@@ -3,6 +3,7 @@ package co.com.bancolombia.usecase.task;
 import co.com.bancolombia.model.User;
 import co.com.bancolombia.model.gateways.UserRepository;
 import co.com.bancolombia.model.gateways.TransactionalGateway;
+import co.com.bancolombia.usecase.user.UserUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -11,7 +12,6 @@ import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class UserUseCaseTest {

@@ -5,7 +5,7 @@ import co.com.bancolombia.api.handler.HandlerUser;
 import co.com.bancolombia.dto.UserRegisterRequest;
 import co.com.bancolombia.model.Role;
 import co.com.bancolombia.model.User;
-import co.com.bancolombia.usecase.task.UserUseCase;
+import co.com.bancolombia.usecase.user.UserUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -65,7 +65,7 @@ class RouterRestTest {
         when(userUseCase.register(any(User.class))).thenReturn(Mono.just(response));
 
         webTestClient.post()
-                .uri(userPath.getUsers())
+                .uri(userPath.getRegister())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
@@ -95,7 +95,7 @@ class RouterRestTest {
                 .build();
 
         webTestClient.post()
-                .uri(userPath.getUsers())
+                .uri(userPath.getRegister())
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(invalidRequest)
                 .exchange()

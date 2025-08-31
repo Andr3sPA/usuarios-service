@@ -2,7 +2,7 @@ package co.com.bancolombia.api.handler;
 
 import co.com.bancolombia.api.util.RequestValidator;
 import co.com.bancolombia.dto.UserRegisterRequest;
-import co.com.bancolombia.usecase.task.UserUseCase;
+import co.com.bancolombia.usecase.user.UserUseCase;
 import co.com.bancolombia.r2dbc.mapper.UserRequestMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

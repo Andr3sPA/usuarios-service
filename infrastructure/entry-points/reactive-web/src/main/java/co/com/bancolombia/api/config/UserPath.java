@@ -8,5 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @ConfigurationProperties(prefix = "routes.paths")
 public class UserPath {
-    private String users;
+    private String register;
+    private String login;
+    private String logout;
 }

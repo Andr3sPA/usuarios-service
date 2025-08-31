@@ -35,10 +35,13 @@ management:
 
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
-
+jwt:
+  secret: "MyVerySecureJwtSecretKeyThatShouldBeChangedInProduction123456789"
 routes:
   paths:
-    users: /api/v1/usuarios
+    register: /api/v1/usuarios
+    login: /api/v1/login
+    logout: /api/v1/logout
 
 adapters:
   restconsumer:

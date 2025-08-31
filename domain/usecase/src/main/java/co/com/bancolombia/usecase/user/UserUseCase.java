@@ -1,4 +1,4 @@
-package co.com.bancolombia.usecase.task;
+package co.com.bancolombia.usecase.user;
 import co.com.bancolombia.model.User;
 import co.com.bancolombia.model.gateways.UserRepository;
 import co.com.bancolombia.model.gateways.TransactionalGateway;

@@ -1,7 +1,13 @@
 package co.com.bancolombia.api;
+
 import co.com.bancolombia.api.config.UserPath;
 import co.com.bancolombia.api.filter.GlobalExceptionFilter;
+import co.com.bancolombia.api.filter.JwtAuthenticationFilter;
+import co.com.bancolombia.api.handler.HandlerAuth;
 import co.com.bancolombia.api.handler.HandlerUser;
+import co.com.bancolombia.dto.LoginRequest;
+import co.com.bancolombia.dto.LoginResponse;
+import co.com.bancolombia.dto.UserRegisterRequest;
 import co.com.bancolombia.model.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,8 +21,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import co.com.bancolombia.dto.UserRegisterRequest;
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
+
+import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -25,6 +31,7 @@ public class RouterRest {
 
     private final UserPath userPath;
     private final GlobalExceptionFilter globalExceptionFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     @RouterOperations({
@@ -57,10 +64,54 @@ public class RouterRest {
                                     )
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/api/v1/auth/login",
+                    method = RequestMethod.POST,
+                    beanClass = HandlerAuth.class,
+                    beanMethod = "login",
+                    operation = @Operation(
+                            operationId = "login",
+                            summary = "Iniciar sesión",
+                            description = "Autentica un usuario y establece cookie JWT",
+                            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                                    required = true,
+                                    content = @Content(
+                                            schema = @Schema(implementation = LoginRequest.class)
+                                    )
+                            ),
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Login exitoso",
+                                            content = @Content(
+                                                    schema = @Schema(implementation = LoginResponse.class)
+                                            )
+                                    ),
+                                    @ApiResponse(
+                                            responseCode = "401",
+                                            description = "Credenciales inválidas"
+                                    )
+                            }
+                    )
+            ),
+            @RouterOperation(
+                    path = "/api/v1/auth/logout",
+                    method = RequestMethod.POST,
+                    beanClass = HandlerAuth.class,
+                    beanMethod = "logout",
+                    operation = @Operation(
+                            operationId = "logout",
+                            summary = "Cerrar sesión",
+                            description = "Invalida la cookie JWT del usuario"
+                    )
             )
     })
-    public RouterFunction<ServerResponse> routerFunction(HandlerUser handlerUser) {
-        return route(POST(userPath.getUsers()), handlerUser::registerUser)
-                .filter(globalExceptionFilter);
+    public RouterFunction<ServerResponse> routerFunction(HandlerUser handlerUser, HandlerAuth handlerAuth) {
+        return route(POST(userPath.getRegister()), handlerUser::registerUser)
+                .andRoute(POST(userPath.getLogin()), handlerAuth::login)
+                .andRoute(POST(userPath.getLogout()), handlerAuth::logout)
+                .filter(globalExceptionFilter)
+                .filter(jwtAuthenticationFilter);
     }
 }
