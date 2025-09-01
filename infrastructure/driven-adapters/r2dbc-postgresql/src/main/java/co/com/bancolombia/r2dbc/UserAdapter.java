@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class UserGatewayAdapter implements UserGateway {
+public class UserAdapter implements UserGateway {
 
     private final ReactiveUserRepository userRepo;
     private final ReactiveRoleRepository roleRepo;
