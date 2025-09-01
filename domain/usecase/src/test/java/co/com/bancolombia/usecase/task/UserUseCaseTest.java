@@ -1,7 +1,7 @@
 package co.com.bancolombia.usecase.task;
 
 import co.com.bancolombia.model.User;
-import co.com.bancolombia.model.gateways.UserRepository;
+import co.com.bancolombia.model.gateways.UserGateway;
 import co.com.bancolombia.model.gateways.TransactionalGateway;
 import co.com.bancolombia.usecase.user.UserUseCase;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 class UserUseCaseTest {
 
     @Mock
-    private UserRepository repository;
+    private UserGateway repository;
 
     @Mock
     private TransactionalGateway transactionalGateway;

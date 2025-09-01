@@ -3,7 +3,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import co.com.bancolombia.exception.EmailAlreadyExistsException;
 import co.com.bancolombia.model.User;
-import co.com.bancolombia.model.gateways.UserRepository;
+import co.com.bancolombia.model.gateways.UserGateway;
 import co.com.bancolombia.r2dbc.entity.UserEntity;
 import co.com.bancolombia.r2dbc.mapper.RoleMapper;
 import co.com.bancolombia.r2dbc.mapper.UserMapper;
@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class UserRepositoryAdapter implements UserRepository {
+public class UserGatewayAdapter implements UserGateway {
 
     private final ReactiveUserRepository userRepo;
     private final ReactiveRoleRepository roleRepo;

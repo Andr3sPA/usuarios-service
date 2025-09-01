@@ -15,7 +15,7 @@ import reactor.core.publisher.Mono;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class UserRepositoryAdapterTest {
+class UserGatewayAdapterTest {
     @Mock
     private ReactiveUserRepository userRepo;
     @Mock
@@ -25,12 +25,12 @@ class UserRepositoryAdapterTest {
     @Mock
     private RoleMapper roleMapper;
 
-    private UserRepositoryAdapter adapter;
+    private UserGatewayAdapter adapter;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        adapter = new UserRepositoryAdapter(userRepo, roleRepo, userMapper, roleMapper);
+        adapter = new UserGatewayAdapter(userRepo, roleRepo, userMapper, roleMapper);
     }
 
     @Test

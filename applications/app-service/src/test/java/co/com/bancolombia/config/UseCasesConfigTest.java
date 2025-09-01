@@ -1,6 +1,6 @@
 package co.com.bancolombia.config;
 
-import co.com.bancolombia.model.gateways.UserRepository;
+import co.com.bancolombia.model.gateways.UserGateway;
 import co.com.bancolombia.model.gateways.TransactionalGateway;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,8 +35,8 @@ public class UseCasesConfigTest {
     static class TestConfig {
 
         @Bean
-        public UserRepository userRepository() {
-            return Mockito.mock(UserRepository.class);
+        public UserGateway userRepository() {
+            return Mockito.mock(UserGateway.class);
         }
 
         @Bean

@@ -35,8 +35,12 @@ management:
 
 cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
+
+# JWT Configuration
 jwt:
   secret: "MyVerySecureJwtSecretKeyThatShouldBeChangedInProduction123456789"
+  expiration: 86400000 # 24 hours in milliseconds
+
 routes:
   paths:
     register: /api/v1/usuarios
