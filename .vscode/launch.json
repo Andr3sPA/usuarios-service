@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "MainApplication",
+            "request": "launch",
+            "mainClass": "co.com.bancolombia.MainApplication",
+            "projectName": ""
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
