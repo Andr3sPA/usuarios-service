@@ -67,7 +67,7 @@ public class RouterRest {
                     )
             ),
             @RouterOperation(
-                    path = "/api/v1/auth/login",
+                    path = "/api/v1/login",
                     method = RequestMethod.POST,
                     beanClass = HandlerAuth.class,
                     beanMethod = "login",
@@ -97,7 +97,7 @@ public class RouterRest {
                     )
             ),
             @RouterOperation(
-                    path = "/api/v1/auth/logout",
+                    path = "/api/v1/logout",
                     method = RequestMethod.POST,
                     beanClass = HandlerAuth.class,
                     beanMethod = "logout",
