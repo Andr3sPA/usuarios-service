@@ -4,6 +4,7 @@ import co.com.bancolombia.api.config.UserPath;
 import co.com.bancolombia.api.filter.GlobalExceptionFilter;
 import co.com.bancolombia.api.filter.JwtAuthenticationFilter;
 import co.com.bancolombia.api.handler.HandlerAuth;
+import co.com.bancolombia.api.handler.HandlerProtected;
 import co.com.bancolombia.api.handler.HandlerUser;
 import co.com.bancolombia.dto.LoginRequest;
 import co.com.bancolombia.dto.LoginResponse;
@@ -107,10 +108,11 @@ public class RouterRest {
                     )
             )
     })
-    public RouterFunction<ServerResponse> routerFunction(HandlerUser handlerUser, HandlerAuth handlerAuth) {
+    public RouterFunction<ServerResponse> routerFunction(HandlerUser handlerUser, HandlerAuth handlerAuth, HandlerProtected handlerProtected) {
         return route(POST(userPath.getRegister()), handlerUser::registerUser)
                 .andRoute(POST(userPath.getLogin()), handlerAuth::login)
                 .andRoute(POST(userPath.getLogout()), handlerAuth::logout)
+                .andRoute(GET(userPath.getSession()),handlerProtected::getProfile)
                 .filter(globalExceptionFilter)
                 .filter(jwtAuthenticationFilter);
     }

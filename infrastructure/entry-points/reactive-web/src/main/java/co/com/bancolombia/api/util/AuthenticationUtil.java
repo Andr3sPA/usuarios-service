@@ -1,23 +1,25 @@
 package co.com.bancolombia.api.util;
-
-import co.com.bancolombia.exception.BaseException;
+import co.com.bancolombia.dto.SessionResponse;
+import co.com.bancolombia.exception.UserNotAuthenticatedException;
+import lombok.RequiredArgsConstructor;
+import org.reactivecommons.utils.ObjectMapper;
 import co.com.bancolombia.model.User;
+import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-
+@Component
+@RequiredArgsConstructor
 public class AuthenticationUtil {
+    private final ObjectMapper mapper;
 
-    public static Mono<User> getAuthenticatedUser(ServerRequest request) {
+    public Mono<SessionResponse> getAuthenticatedUser(ServerRequest request) {
         return Mono.justOrEmpty(request.attribute("authenticatedUser"))
                 .cast(User.class)
-                .switchIfEmpty(Mono.error(new BaseException(
-                        "USER_NOT_AUTHENTICATED",
-                        "Usuario no autenticado",
-                        "No se encontró información del usuario autenticado",
-                        List.of("Usuario no presente en el contexto"),
-                        401
-                )));
+                .map(user -> mapper.map(user, SessionResponse.class))
+                .switchIfEmpty(Mono.error(new UserNotAuthenticatedException()));
     }
 }

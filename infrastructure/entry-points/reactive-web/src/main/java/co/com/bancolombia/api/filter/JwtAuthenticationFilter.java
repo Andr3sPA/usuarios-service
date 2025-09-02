@@ -1,7 +1,10 @@
 package co.com.bancolombia.api.filter;
 
+import co.com.bancolombia.api.config.UserPath;
 import co.com.bancolombia.api.response.ErrorResponse;
+import co.com.bancolombia.exception.AuthenticationException;
 import co.com.bancolombia.exception.BaseException;
+import co.com.bancolombia.exception.TokenNotFoundException;
 import co.com.bancolombia.usecase.auth.AuthUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,22 +25,24 @@ import java.util.List;
 public class JwtAuthenticationFilter implements HandlerFilterFunction<ServerResponse, ServerResponse> {
 
     private final AuthUseCase authUseCase;
+    private final UserPath userPath;
 
     @Override
     @NonNull
     public Mono<ServerResponse> filter(@NonNull ServerRequest request,
                                        @NonNull HandlerFunction<ServerResponse> next) {
 
-        // Rutas que no requieren autenticación
-        String path = request.path();
-        if (isPublicPath(path)) {
+        String requestPath = request.path();
+        List<String> publicPaths = List.of(userPath.getLogin(), userPath.getRegister());
+
+        if (publicPaths.contains(requestPath)) {
             return next.handle(request);
         }
+
 
         return extractTokenFromCookies(request)
                 .flatMap(authUseCase::validateTokenAndGetUser)
                 .flatMap(user -> {
-                    // Agregar el usuario al contexto de la request
                     ServerRequest enrichedRequest = ServerRequest.from(request)
                             .attribute("authenticatedUser", user)
                             .build();
@@ -57,35 +62,14 @@ public class JwtAuthenticationFilter implements HandlerFilterFunction<ServerResp
                 })
                 .onErrorResume(Exception.class, ex -> {
                     log.error("Error inesperado en filtro JWT", ex);
-                    return ServerResponse.status(401)
-                            .bodyValue(ErrorResponse.builder()
-                                    .errorCode("AUTHENTICATION_ERROR")
-                                    .tittle("Error de autenticación")
-                                    .message("No se pudo validar la autenticación")
-                                    .errors(List.of("Error interno del servidor"))
-                                    .status(401)
-                                    .timestamp(Instant.now())
-                                    .build());
+                    return Mono.error(new AuthenticationException(ex.getMessage()));
                 });
     }
 
-    private boolean isPublicPath(String path) {
-        return path.equals("/api/v1/usuarios") ||
-                path.equals("/api/v1/auth/login") ||
-                path.startsWith("/swagger-ui") ||
-                path.startsWith("/v3/api-docs") ||
-                path.startsWith("/webjars");
-    }
 
     private Mono<String> extractTokenFromCookies(ServerRequest request) {
         return Mono.justOrEmpty(request.cookies().getFirst("jwt-token"))
                 .map(cookie -> cookie.getValue())
-                .switchIfEmpty(Mono.error(new BaseException(
-                        "TOKEN_NOT_FOUND",
-                        "Token no encontrado",
-                        "No se encontró token de autenticación en las cookies",
-                        List.of("Cookie jwt-token no presente"),
-                        401
-                )));
+                .switchIfEmpty(Mono.error(new TokenNotFoundException()));
     }
 }

@@ -11,8 +11,8 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security:spring-security-web'
-
     implementation project(':r2dbc-postgresql')
+    implementation "org.reactivecommons.utils:object-mapper:0.1.0"
 
     implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.10'
 }

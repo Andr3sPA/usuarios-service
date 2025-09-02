@@ -11,4 +11,5 @@ public class UserPath {
     private String register;
     private String login;
     private String logout;
+    private String session;
 }

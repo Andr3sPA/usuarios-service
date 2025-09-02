@@ -14,30 +14,16 @@ import reactor.core.publisher.Mono;
 @Component
 @RequiredArgsConstructor
 public class HandlerProtected {
-
+    private final AuthenticationUtil authenticationUtil;
     public Mono<ServerResponse> getProfile(ServerRequest serverRequest) {
-        return AuthenticationUtil.getAuthenticatedUser(serverRequest)
+        return authenticationUtil.getAuthenticatedUser(serverRequest) // ✅ ahora es de instancia
                 .flatMap(user -> {
                     log.info("Usuario autenticado accediendo a perfil: {}", user.getEmail());
-                    // Remover password antes de retornar
-                    user.setPassword(null);
+
                     return ServerResponse.ok()
                             .contentType(MediaType.APPLICATION_JSON)
                             .bodyValue(user);
                 });
     }
 
-    public Mono<ServerResponse> updateProfile(ServerRequest serverRequest) {
-        return AuthenticationUtil.getAuthenticatedUser(serverRequest)
-                .flatMap(authenticatedUser -> {
-                    log.info("Usuario {} actualizando perfil", authenticatedUser.getEmail());
-
-                    // Aquí puedes agregar lógica para actualizar el perfil
-                    // usando los casos de uso correspondientes
-
-                    return ServerResponse.ok()
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .bodyValue("Perfil actualizado exitosamente");
-                });
-    }
 }

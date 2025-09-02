@@ -1,8 +1,10 @@
 package co.com.bancolombia.api.handler;
 
+import co.com.bancolombia.api.util.AuthenticationUtil;
 import co.com.bancolombia.api.util.RequestValidator;
 import co.com.bancolombia.dto.LoginRequest;
 import co.com.bancolombia.dto.LoginResponse;
+import co.com.bancolombia.exception.TokenNotFoundException;
 import co.com.bancolombia.usecase.auth.AuthUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,7 @@ public class HandlerAuth {
 
     private final AuthUseCase authUseCase;
     private final RequestValidator requestValidator;
-
+    private final AuthenticationUtil authenticationUtil;
     public Mono<ServerResponse> login(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(LoginRequest.class)
                 .flatMap(dto -> {
@@ -58,16 +60,21 @@ public class HandlerAuth {
     }
 
     public Mono<ServerResponse> logout(ServerRequest serverRequest) {
-        ResponseCookie expiredCookie = ResponseCookie.from("jwt-token", "")
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
-                .maxAge(Duration.ZERO)
-                .path("/")
-                .build();
+        return authenticationUtil.getAuthenticatedUser(serverRequest)
+                .flatMap(user -> {
+                    ResponseCookie expiredCookie = ResponseCookie.from("jwt-token", "")
+                            .httpOnly(true)
+                            .secure(true)
+                            .sameSite("Strict")
+                            .maxAge(Duration.ZERO)
+                            .path("/")
+                            .build();
 
-        return ServerResponse.ok()
-                .cookie(expiredCookie)
-                .bodyValue("Logout exitoso");
+                    return ServerResponse.ok()
+                            .cookie(expiredCookie)
+                            .bodyValue("Logout exitoso");
+                });
     }
+
+
 }
