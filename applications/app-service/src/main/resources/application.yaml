@@ -67,3 +67,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     enabled: true
+microservices:
+  solicitud:
+    base-url: "http://localhost:8081"
+  timeout:
+    connection: 5000
+    read: 10000
+    write: 10000

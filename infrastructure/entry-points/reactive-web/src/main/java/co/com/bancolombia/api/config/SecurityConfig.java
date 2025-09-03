@@ -17,15 +17,12 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(
-                                "/api/v1/usuarios",
-                                "/api/v1/login",
-                                "/api/v1/logout",
-                                "api/v1/session",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
-                                "/webjars/**"
+                                "/webjars/**",
+                                "/api/v1/**"
                         ).permitAll()
                         .anyExchange().authenticated()
                 )

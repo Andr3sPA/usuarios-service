@@ -5,6 +5,7 @@ import co.com.bancolombia.api.filter.GlobalExceptionFilter;
 import co.com.bancolombia.api.filter.JwtAuthenticationFilter;
 import co.com.bancolombia.api.handler.HandlerAuth;
 import co.com.bancolombia.api.handler.HandlerProtected;
+import co.com.bancolombia.api.handler.HandlerSolicitud;
 import co.com.bancolombia.api.handler.HandlerUser;
 import co.com.bancolombia.dto.LoginRequest;
 import co.com.bancolombia.dto.LoginResponse;
@@ -106,13 +107,29 @@ public class RouterRest {
                             summary = "Cerrar sesión",
                             description = "Invalida la cookie JWT del usuario"
                     )
+            ),
+            @RouterOperation(
+                    path = "/api/v1/solicitud",
+                    method = RequestMethod.GET,
+                    beanClass = HandlerSolicitud.class,
+                    beanMethod = "createSolicitud",
+                    operation = @Operation(
+                            operationId = "createSolicitud",
+                            summary = "Crear una solicitud",
+                            description = "Crea una nueva solicitud en el microservicio externo"
+                    )
             )
     })
-    public RouterFunction<ServerResponse> routerFunction(HandlerUser handlerUser, HandlerAuth handlerAuth, HandlerProtected handlerProtected) {
+    public RouterFunction<ServerResponse> routerFunction(HandlerSolicitud handlerSolicitud,
+                                                         HandlerUser handlerUser,
+                                                         HandlerAuth handlerAuth,
+                                                         HandlerProtected handlerProtected) {
         return route(POST(userPath.getRegister()), handlerUser::registerUser)
                 .andRoute(POST(userPath.getLogin()), handlerAuth::login)
                 .andRoute(POST(userPath.getLogout()), handlerAuth::logout)
                 .andRoute(GET(userPath.getSession()),handlerProtected::getProfile)
+                .andRoute(GET("/api/v1/solicitud"), handlerSolicitud::getSolicitudes)
+                .andRoute(POST("/api/v1/solicitud"), handlerSolicitud::createSolicitud)
                 .filter(globalExceptionFilter)
                 .filter(jwtAuthenticationFilter);
     }
