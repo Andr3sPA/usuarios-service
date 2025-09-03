@@ -1,5 +1,6 @@
 package co.com.bancolombia.api.handler;
-
+import co.com.bancolombia.model.User;
+import org.reactivecommons.utils.ObjectMapper;
 import co.com.bancolombia.api.util.AuthenticationUtil;
 import co.com.bancolombia.dto.SessionResponse;
 import co.com.bancolombia.usecase.solicitud.SolicitudUseCase;
@@ -19,7 +20,7 @@ public class HandlerSolicitud {
 
     private final SolicitudUseCase solicitudUseCase;
     private final AuthenticationUtil authenticationUtil;
-
+    private final ObjectMapper mapper;
     public Mono<ServerResponse> createSolicitud(ServerRequest serverRequest) {
         return authenticationUtil.getAuthenticatedUser(serverRequest)
                 .flatMap(user ->
@@ -27,7 +28,7 @@ public class HandlerSolicitud {
                                 .flatMap(solicitudData ->
                                         solicitudUseCase.createSolicitud(
                                                 solicitudData,
-                                                mapToUser(user),
+                                                mapper.map(user, User.class),
                                                 JsonNode.class
                                         )
                                 )
@@ -56,20 +57,4 @@ public class HandlerSolicitud {
                 .doOnError(error -> log.error("Error al consultar solicitudes", error));
     }
 
-    private co.com.bancolombia.model.User mapToUser(SessionResponse sessionResponse) {
-        return co.com.bancolombia.model.User.builder()
-                .id(sessionResponse.getId())
-                .firstName(sessionResponse.getFirstName())
-                .lastName(sessionResponse.getLastName())
-                .email(sessionResponse.getEmail())
-                .phone(sessionResponse.getPhone())
-                .address(sessionResponse.getAddress())
-                .baseSalary(sessionResponse.getBaseSalary())
-                .role(co.com.bancolombia.model.Role.builder()
-                        .id(sessionResponse.getRole().getId())
-                        .name(sessionResponse.getRole().getName())
-                        .description(sessionResponse.getRole().getDescription())
-                        .build())
-                .build();
-    }
 }
