@@ -1,6 +1,5 @@
 package co.com.bancolombia.api.filter;
 
-import co.com.bancolombia.api.config.UserPath;
 import co.com.bancolombia.api.response.ErrorResponse;
 import co.com.bancolombia.exception.BaseException;
 import co.com.bancolombia.exception.InsufficientPrivilegesException;
@@ -22,11 +21,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleAuthorizationFilter implements HandlerFilterFunction<ServerResponse, ServerResponse> {
 
-
+    // Rutas que requieren rol de ADMIN
     private final List<String> adminOnlyPaths = List.of(
             "/api/v1/usuarios"
     );
-
 
     @Override
     @NonNull
@@ -35,13 +33,14 @@ public class RoleAuthorizationFilter implements HandlerFilterFunction<ServerResp
 
         String requestPath = request.path();
 
-
         if (requiresAdminRole(requestPath)) {
+            log.debug("Validando rol de admin para la ruta: {}", requestPath);
             return validateAdminRole(request)
                     .then(next.handle(request))
                     .onErrorResume(BaseException.class, this::handleAuthorizationError);
         }
 
+        log.debug("Ruta sin restricciones de rol: {}", requestPath);
         return next.handle(request);
     }
 
@@ -54,13 +53,16 @@ public class RoleAuthorizationFilter implements HandlerFilterFunction<ServerResp
                 .cast(User.class)
                 .flatMap(user -> {
                     String userRole = user.getRole().getName();
+                    log.debug("Validando rol del usuario {}: {}", user.getEmail(), userRole);
+
                     if (!"ADMIN".equals(userRole)) {
-                        log.warn("Usuario {} con rol {} intentó acceder a recurso de admin",
-                                user.getEmail(), userRole);
+                        log.warn("Usuario {} con rol {} intentó acceder a recurso de admin en {}",
+                                user.getEmail(), userRole, request.path());
                         return Mono.error(new InsufficientPrivilegesException("ADMIN"));
                     }
-                    log.info("Acceso autorizado para admin: {}", user.getEmail());
-                    return Mono.empty();
+
+                    log.info("Acceso autorizado para admin: {} en {}", user.getEmail(), request.path());
+                    return Mono.<Void>empty();
                 });
     }
 

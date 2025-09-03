@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter implements HandlerFilterFunction<ServerResp
                                        @NonNull HandlerFunction<ServerResponse> next) {
 
         String requestPath = request.path();
-        List<String> publicPaths = List.of(userPath.getLogin(), userPath.getRegister());
+        List<String> publicPaths = List.of(userPath.getLogin());
 
         if (publicPaths.contains(requestPath)) {
             return next.handle(request);
