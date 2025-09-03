@@ -28,8 +28,8 @@ public class SolicitudAdapter implements SolicitudGateway {
                 return webClient.post()
                                 .uri(solicitudBaseUrl + "/api/v1/solicitud")
                                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                                .header("X-User-Email", authenticatedUser.getEmail())
                                 .header("X-User-Id", authenticatedUser.getId().toString())
+                                .header("X-User-Email", authenticatedUser.getEmail())
                                 .header("X-User-Role", authenticatedUser.getRole().getName())
                                 .bodyValue(solicitudData)
                                 .exchangeToMono(response -> response.bodyToMono(responseType));
