@@ -19,9 +19,6 @@ public class SolicitudUseCase {
      */
     public <T, R> Mono<R> createSolicitud(T solicitudData, User authenticatedUser, Class<R> responseType) {
 
-        // Aquí podrías agregar validaciones de negocio si fuera necesario
-        // Por ejemplo: validar que el usuario tenga permisos, etc.
-
         return solicitudGateway.createSolicitud(solicitudData, authenticatedUser, responseType);
     }
 

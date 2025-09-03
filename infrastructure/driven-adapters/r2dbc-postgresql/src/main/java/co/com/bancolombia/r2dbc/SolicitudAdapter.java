@@ -21,33 +21,25 @@ public class SolicitudAdapter implements SolicitudGateway {
 
     @Value("${microservices.solicitud.base-url:http://localhost:8081}")
     private String solicitudBaseUrl;
-    @Override
-    public <T, R> Mono<R> createSolicitud(T solicitudData, User authenticatedUser, Class<R> responseType) {
-        log.info("Creando solicitud para usuario: {}", authenticatedUser.getEmail());
+        @Override
+        public <T, R> Mono<R> createSolicitud(T solicitudData, User authenticatedUser, Class<R> responseType) {
+                log.info("Creando solicitud para usuario: {}", authenticatedUser.getEmail());
 
-        return webClient.post()
-                .uri(solicitudBaseUrl + "/api/v1/solicitud")
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .header("X-User-Email", authenticatedUser.getEmail())
-                .header("X-User-Id", authenticatedUser.getId().toString())
-                .header("X-User-Role", authenticatedUser.getRole().getName())
-                .bodyValue(solicitudData)
-                .retrieve()
-                .bodyToMono(responseType)
-                .doOnSuccess(response -> log.info("Solicitud creada exitosamente para usuario: {}",
-                        authenticatedUser.getEmail()))
-                .doOnError(error -> log.error("Error al crear solicitud para usuario: {}",
-                        authenticatedUser.getEmail(), error));
+                return webClient.post()
+                                .uri(solicitudBaseUrl + "/api/v1/solicitud")
+                                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                                .header("X-User-Email", authenticatedUser.getEmail())
+                                .header("X-User-Id", authenticatedUser.getId().toString())
+                                .header("X-User-Role", authenticatedUser.getRole().getName())
+                                .bodyValue(solicitudData)
+                                .exchangeToMono(response -> response.bodyToMono(responseType));
     }
 
-    @Override
-    public <R> Mono<R> getSolicitudes(Class<R> responseType) {
-        return webClient.get()
-                .uri(solicitudBaseUrl + "/api/v1/solicitud")
-                .retrieve()
-                .bodyToMono(responseType)
-                .doOnSuccess(response -> log.info("Solicitud {} obtenida exitosamente"))
-                .doOnError(error -> log.error("Error al obtener solicitud {}", error));
+        @Override
+        public <R> Mono<R> getSolicitudes(Class<R> responseType) {
+                return webClient.get()
+                                .uri(solicitudBaseUrl + "/api/v1/solicitud")
+                                .exchangeToMono(response -> response.bodyToMono(responseType));
     }
 
 }
