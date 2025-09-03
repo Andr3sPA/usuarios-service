@@ -47,6 +47,7 @@ routes:
     login: /api/v1/login
     logout: /api/v1/logout
     session: /api/v1/session
+    loanApplication: /api/v1/solicitud
 
 adapters:
   restconsumer:

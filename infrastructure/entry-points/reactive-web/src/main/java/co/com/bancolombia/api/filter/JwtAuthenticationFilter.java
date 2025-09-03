@@ -1,5 +1,6 @@
 package co.com.bancolombia.api.filter;
 
+import co.com.bancolombia.api.config.LoanAppPath;
 import co.com.bancolombia.api.config.UserPath;
 import co.com.bancolombia.api.response.ErrorResponse;
 import co.com.bancolombia.exception.AuthenticationException;
@@ -24,13 +25,12 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter implements HandlerFilterFunction<ServerResponse, ServerResponse> {
-
+    private final LoanAppPath loanAppPath;
     private final AuthUseCase authUseCase;
     private final UserPath userPath;
 
-    // Rutas que requieren rol de ADMIN
     private final List<String> adminOnlyPaths = List.of(
-            "/api/v1/usuarios"
+        "/api/v1/usuarios"
     );
 
     @Override
@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter implements HandlerFilterFunction<ServerResp
                     log.info("Usuario autenticado: {} con rol: {}", user.getEmail(), user.getRole().getName());
 
                     // Validar rol si es necesario
-                    if (requiresAdminRole(requestPath)) {
+                    if (requiresAdminRole(requestPath,request.methodName())) {
                         return validateAdminRole(user, requestPath)
                                 .then(proceedWithRequest(request, user, next));
                     } else {
@@ -73,8 +73,11 @@ public class JwtAuthenticationFilter implements HandlerFilterFunction<ServerResp
                 });
     }
 
-    private boolean requiresAdminRole(String path) {
-        return adminOnlyPaths.stream().anyMatch(path::startsWith);
+    private boolean requiresAdminRole(String path, String method) {
+        if (path.equals("/api/v1/solicitud") && "GET".equalsIgnoreCase(method)) {
+            return true;
+        }
+        return adminOnlyPaths.stream().anyMatch(p -> path.startsWith(p));
     }
 
     private Mono<Void> validateAdminRole(User user, String requestPath) {

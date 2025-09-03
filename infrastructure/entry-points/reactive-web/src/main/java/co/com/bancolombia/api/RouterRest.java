@@ -1,5 +1,6 @@
 package co.com.bancolombia.api;
 
+import co.com.bancolombia.api.config.LoanAppPath;
 import co.com.bancolombia.api.config.UserPath;
 import co.com.bancolombia.api.filter.GlobalExceptionFilter;
 import co.com.bancolombia.api.filter.JwtAuthenticationFilter;
@@ -30,7 +31,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 @RequiredArgsConstructor
 public class RouterRest {
-
+    private final LoanAppPath loanAppPath;
     private final UserPath userPath;
     private final GlobalExceptionFilter globalExceptionFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -128,8 +129,8 @@ public class RouterRest {
                 .andRoute(POST(userPath.getLogin()), handlerAuth::login)
                 .andRoute(POST(userPath.getLogout()), handlerAuth::logout)
                 .andRoute(GET(userPath.getSession()),handlerProtected::getProfile)
-                .andRoute(GET("/api/v1/solicitud"), handlerSolicitud::getSolicitudes)
-                .andRoute(POST("/api/v1/solicitud"), handlerSolicitud::createSolicitud)
+                .andRoute(GET(loanAppPath.getLoanApplication()), handlerSolicitud::getSolicitudes)
+                .andRoute(POST(loanAppPath.getLoanApplication()), handlerSolicitud::createSolicitud)
                 .filter(globalExceptionFilter)
                 .filter(jwtAuthenticationFilter);
     }
