@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 public class HandlerProtected {
     private final AuthenticationUtil authenticationUtil;
     public Mono<ServerResponse> getProfile(ServerRequest serverRequest) {
-        return authenticationUtil.getAuthenticatedUser(serverRequest) // ✅ ahora es de instancia
+        return authenticationUtil.getAuthenticatedUser(serverRequest)
                 .flatMap(user -> {
                     log.info("Usuario autenticado accediendo a perfil: {}", user.getEmail());
 
