@@ -3,7 +3,6 @@ package co.com.bancolombia.api;
 import co.com.bancolombia.api.config.UserPath;
 import co.com.bancolombia.api.filter.GlobalExceptionFilter;
 import co.com.bancolombia.api.filter.JwtAuthenticationFilter;
-import co.com.bancolombia.api.filter.RoleAuthorizationFilter;
 import co.com.bancolombia.api.handler.HandlerAuth;
 import co.com.bancolombia.api.handler.HandlerProtected;
 import co.com.bancolombia.api.handler.HandlerUser;
@@ -34,7 +33,6 @@ public class RouterRest {
     private final UserPath userPath;
     private final GlobalExceptionFilter globalExceptionFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final RoleAuthorizationFilter roleAuthorizationFilter;
 
     @Bean
     @RouterOperations({
@@ -116,7 +114,6 @@ public class RouterRest {
                 .andRoute(POST(userPath.getLogout()), handlerAuth::logout)
                 .andRoute(GET(userPath.getSession()),handlerProtected::getProfile)
                 .filter(globalExceptionFilter)
-                .filter(jwtAuthenticationFilter)
-                .filter(roleAuthorizationFilter);
+                .filter(jwtAuthenticationFilter);
     }
 }
