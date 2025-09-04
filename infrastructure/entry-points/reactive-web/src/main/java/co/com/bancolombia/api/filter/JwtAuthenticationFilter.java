@@ -114,7 +114,6 @@ public class JwtAuthenticationFilter implements HandlerFilterFunction<ServerResp
                         .tittle(ex.getTitle())
                         .message(ex.getMessage())
                         .errors(ex.getErrors())
-                        .status(ex.getStatus())
                         .timestamp(ex.getTimestamp())
                         .build());
     }
