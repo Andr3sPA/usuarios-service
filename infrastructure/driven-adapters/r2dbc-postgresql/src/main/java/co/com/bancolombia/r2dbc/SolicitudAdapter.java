@@ -36,9 +36,11 @@ public class SolicitudAdapter implements SolicitudGateway {
     }
 
         @Override
-        public <R> Mono<R> getSolicitudes(Class<R> responseType) {
+        public <R> Mono<R> getSolicitudes(Class<R> responseType,int page,int size) {
+            String url = String.format("%s/api/v1/solicitud?page=%d&size=%d",
+                    solicitudBaseUrl, page, size);
                 return webClient.get()
-                                .uri(solicitudBaseUrl + "/api/v1/solicitud")
+                                .uri(url)
                                 .exchangeToMono(response -> response.bodyToMono(responseType));
     }
 

@@ -42,11 +42,14 @@ public class HandlerSolicitud {
     }
 
     public Mono<ServerResponse> getSolicitudes(ServerRequest serverRequest) {
-
+        int page = Integer.parseInt(serverRequest.queryParam("page").orElse("0"));
+        int size = Integer.parseInt(serverRequest.queryParam("size").orElse("10"));
         return authenticationUtil.getAuthenticatedUser(serverRequest)
                 .flatMap(user ->
                         solicitudUseCase.getSolicitudes(
-                                JsonNode.class
+                                JsonNode.class,
+                                page,
+                                size
                         )
                 )
                 .flatMap(result -> ServerResponse

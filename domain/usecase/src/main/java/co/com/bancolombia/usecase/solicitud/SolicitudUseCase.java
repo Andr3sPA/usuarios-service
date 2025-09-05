@@ -26,8 +26,8 @@ public class SolicitudUseCase {
      * Obtiene una solicitud por ID
      * @return Mono con la solicitud encontrada
      */
-    public <R> Mono<R> getSolicitudes( Class<R> responseType) {
+    public <R> Mono<R> getSolicitudes( Class<R> responseType,int page,int size) {
 
-        return solicitudGateway.getSolicitudes( responseType);
+        return solicitudGateway.getSolicitudes( responseType,page,size);
     }
 }

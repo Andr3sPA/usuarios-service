@@ -18,5 +18,5 @@ public interface SolicitudGateway {
      * Obtiene una solicitud por ID desde el microservicio externo
      * @return Mono con la solicitud encontrada
      */
-    <R> Mono<R> getSolicitudes( Class<R> responseType);
+    <R> Mono<R> getSolicitudes( Class<R> responseType,int page,int size);
 }
