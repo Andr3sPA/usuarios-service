@@ -44,4 +44,14 @@ public class SolicitudAdapter implements SolicitudGateway {
                                 .exchangeToMono(response -> response.bodyToMono(responseType));
     }
 
+    @Override
+    public <T, R> Mono<R> updateSolicitud(T solicitudData, Class<R> responseType) {
+        log.info("Actualizando solicitud");
+        return webClient.put()
+                .uri(solicitudBaseUrl + "/api/v1/solicitud")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .bodyValue(solicitudData)
+                .exchangeToMono(response -> response.bodyToMono(responseType));
+    }
+
 }

@@ -59,5 +59,24 @@ public class HandlerSolicitud {
                 .doOnSuccess(response -> log.info("Solicitudes consultadas exitosamente"))
                 .doOnError(error -> log.error("Error al consultar solicitudes", error));
     }
+    public Mono<ServerResponse> updateSolicitud(ServerRequest req){
+        return authenticationUtil.getAuthenticatedUser(req)
+                .flatMap(user ->
+                        req.bodyToMono(JsonNode.class)
+                                .flatMap(solicitudData ->
+                                        solicitudUseCase.updateSolicitud(
+                                                solicitudData,
+                                                JsonNode.class
+                                        )
+                                )
+                )
+                .flatMap(result -> ServerResponse
+                        .ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(result))
+                .doOnSuccess(response -> log.info("Solicitud actualizada exitosamente"))
+                .doOnError(error -> log.error("Error al actualizar solicitud", error));
+
+    }
 
 }

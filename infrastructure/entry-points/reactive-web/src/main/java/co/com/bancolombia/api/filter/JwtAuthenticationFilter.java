@@ -74,7 +74,8 @@ public class JwtAuthenticationFilter implements HandlerFilterFunction<ServerResp
     }
 
     private boolean requiresAdminRole(String path, String method) {
-        if (path.equals("/api/v1/solicitud") && "GET".equalsIgnoreCase(method)) {
+        if (path.equals("/api/v1/solicitud") &&
+                ("GET".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method))) {
             return true;
         }
         return adminOnlyPaths.stream().anyMatch(p -> path.startsWith(p));

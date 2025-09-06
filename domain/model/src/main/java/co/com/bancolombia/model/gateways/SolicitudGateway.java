@@ -19,4 +19,5 @@ public interface SolicitudGateway {
      * @return Mono con la solicitud encontrada
      */
     <R> Mono<R> getSolicitudes( Class<R> responseType,int page,int size);
+    <T, R> Mono<R> updateSolicitud(T solicitudData,Class<R> responseType);
 }

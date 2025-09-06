@@ -131,6 +131,7 @@ public class RouterRest {
                 .andRoute(GET(userPath.getSession()),handlerProtected::getProfile)
                 .andRoute(GET(loanAppPath.getLoanApplication()), handlerSolicitud::getSolicitudes)
                 .andRoute(POST(loanAppPath.getLoanApplication()), handlerSolicitud::createSolicitud)
+                .andRoute(PUT(loanAppPath.getLoanApplication()), handlerSolicitud::updateSolicitud)
                 .filter(globalExceptionFilter)
                 .filter(jwtAuthenticationFilter);
     }

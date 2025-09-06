@@ -30,4 +30,9 @@ public class SolicitudUseCase {
 
         return solicitudGateway.getSolicitudes( responseType,page,size);
     }
+    public <T, R> Mono<R> updateSolicitud(T solicitudData,Class<R> responseType) {
+
+        return solicitudGateway.updateSolicitud(solicitudData,responseType);
+    }
+
 }
