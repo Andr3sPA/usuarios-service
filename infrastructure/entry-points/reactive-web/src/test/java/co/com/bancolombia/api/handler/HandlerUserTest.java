@@ -1,7 +1,10 @@
 package co.com.bancolombia.api.handler;
 
+import co.com.bancolombia.dto.UserRegisterRequest;
 import co.com.bancolombia.model.User;
 import co.com.bancolombia.usecase.user.UserUseCase;
+import co.com.bancolombia.r2dbc.mapper.UserRequestMapper;
+import co.com.bancolombia.api.util.RequestValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,6 +20,10 @@ import static org.mockito.Mockito.*;
 class HandlerUserTest {
     @Mock
     private UserUseCase userUseCase;
+    @Mock
+    private UserRequestMapper userRequestMapper;
+    @Mock
+    private RequestValidator requestValidator;
     @InjectMocks
     private HandlerUser handlerUser;
 
@@ -27,16 +34,21 @@ class HandlerUserTest {
 
     @Test
     void testRegisterUser() {
+        UserRegisterRequest dto = new UserRegisterRequest();
         User user = new User();
         ServerRequest serverRequest = mock(ServerRequest.class);
-        when(serverRequest.bodyToMono(User.class)).thenReturn(Mono.just(user));
+        when(serverRequest.bodyToMono(eq(UserRegisterRequest.class))).thenReturn(Mono.just(dto));
+        doNothing().when(requestValidator).validate(dto, UserRegisterRequest.class);
+        when(userRequestMapper.toModel(dto)).thenReturn(user);
         when(userUseCase.register(user)).thenReturn(Mono.just(user));
 
         Mono<ServerResponse> responseMono = handlerUser.registerUser(serverRequest);
         ServerResponse response = responseMono.block();
         assertNotNull(response);
         assertEquals(MediaType.APPLICATION_JSON, response.headers().getContentType());
-        verify(serverRequest).bodyToMono(User.class);
+        verify(serverRequest).bodyToMono(UserRegisterRequest.class);
+        verify(requestValidator).validate(dto, UserRegisterRequest.class);
+        verify(userRequestMapper).toModel(dto);
         verify(userUseCase).register(user);
     }
 }

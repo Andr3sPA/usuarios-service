@@ -2,6 +2,8 @@ package co.com.bancolombia.config;
 
 import co.com.bancolombia.model.gateways.UserGateway;
 import co.com.bancolombia.model.gateways.TransactionalGateway;
+import co.com.bancolombia.model.gateways.AuthenticationGateway;
+import co.com.bancolombia.model.gateways.SolicitudGateway;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -42,6 +44,16 @@ public class UseCasesConfigTest {
         @Bean
         public TransactionalGateway transactionalGateway() {
             return Mockito.mock(TransactionalGateway.class);
+        }
+
+        @Bean
+        public AuthenticationGateway authenticationGateway() {
+            return Mockito.mock(AuthenticationGateway.class);
+        }
+
+        @Bean
+        public SolicitudGateway solicitudGateway() {
+            return Mockito.mock(SolicitudGateway.class);
         }
 
         @Bean

@@ -1,5 +1,6 @@
 package co.com.bancolombia.api;
 
+import co.com.bancolombia.api.config.LoanAppPath;
 import co.com.bancolombia.api.config.UserPath;
 import co.com.bancolombia.api.handler.HandlerUser;
 import co.com.bancolombia.dto.UserRegisterRequest;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -21,8 +24,8 @@ import java.time.LocalDate;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {RouterRest.class, HandlerUser.class})
-@EnableConfigurationProperties(UserPath.class)
+@ContextConfiguration(classes = {RouterRest.class, HandlerUser.class, RouterRestTest.TestConfig.class})
+@EnableConfigurationProperties({UserPath.class, LoanAppPath.class})
 @WebFluxTest
 class RouterRestTest {
 
@@ -34,6 +37,9 @@ class RouterRestTest {
 
     @Autowired
     private UserPath userPath;
+
+    @Autowired
+    private LoanAppPath loanAppPath;
 
     @Test
     void shouldRegisterUser() {
@@ -101,5 +107,17 @@ class RouterRestTest {
                 .exchange()
                 .expectStatus().isBadRequest();
     }
-}
 
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public LoanAppPath loanAppPath() {
+            return new LoanAppPath();
+        }
+
+        @Bean
+        public UserPath userPath() {
+            return new UserPath();
+        }
+    }
+}

@@ -1,4 +1,4 @@
-package co.com.bancolombia.usecase.task;
+package co.com.bancolombia.usecase.usuario;
 
 import co.com.bancolombia.model.User;
 import co.com.bancolombia.model.gateways.UserGateway;
@@ -65,3 +65,4 @@ class UserUseCaseTest {
         verify(transactionalGateway).transactional(any(Mono.class));
     }
 }
+

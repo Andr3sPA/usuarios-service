@@ -1,4 +1,4 @@
 routes:
   paths:
-    tasks: "/api/v1/tasks"
-    tasksById: "/api/v1/tasks/{id}"
+    usuarios: "/api/v1/usuarios"
+    usuariosById: "/api/v1/usuarios/{id}"
