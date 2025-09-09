@@ -1,6 +1,7 @@
 server:
   port: 8080
   address: 0.0.0.0
+
 spring:
   application:
     name: "JavaReactivo"
@@ -51,7 +52,7 @@ routes:
 adapters:
   restconsumer:
     timeout: 5000
-    url: http://localhost:8080
+    url: ${REST_CONSUMER_URL}   # ← ahora viene del .env
   r2dbc:
     host: ${R2DBC_HOST}
     port: ${R2DBC_PORT}
@@ -67,9 +68,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     enabled: true
+
 microservices:
   solicitud:
-    base-url: "http://localhost:8081"
+    base-url: ${SOLICITUD_SERVICE_URL}   # ← ahora viene del .env
   timeout:
     connection: 5000
     read: 10000

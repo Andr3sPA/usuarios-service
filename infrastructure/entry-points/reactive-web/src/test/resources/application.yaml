@@ -1,4 +1,7 @@
 routes:
   paths:
-    usuarios: "/api/v1/usuarios"
-    usuariosById: "/api/v1/usuarios/{id}"
+    register: "/api/v1/usuarios"
+    login: "/api/v1/login"
+    logout: "/api/v1/logout"
+    session: "/api/v1/session"
+    loanApplication: "/api/v1/solicitud"

@@ -2,10 +2,15 @@ package co.com.bancolombia.api;
 
 import co.com.bancolombia.api.config.LoanAppPath;
 import co.com.bancolombia.api.config.UserPath;
+import co.com.bancolombia.api.filter.GlobalExceptionFilter;
+import co.com.bancolombia.api.filter.JwtAuthenticationFilter;
 import co.com.bancolombia.api.handler.HandlerUser;
+import co.com.bancolombia.api.util.RequestValidator;
+import co.com.bancolombia.r2dbc.mapper.UserRequestMapper;
 import co.com.bancolombia.dto.UserRegisterRequest;
 import co.com.bancolombia.model.Role;
 import co.com.bancolombia.model.User;
+import co.com.bancolombia.usecase.auth.AuthUseCase;
 import co.com.bancolombia.usecase.user.UserUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.validation.Validator;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
@@ -34,6 +40,9 @@ class RouterRestTest {
 
     @MockitoBean
     private UserUseCase userUseCase;
+
+    @MockitoBean
+    private AuthUseCase authUseCase;
 
     @Autowired
     private UserPath userPath;
@@ -110,14 +119,47 @@ class RouterRestTest {
 
     @Configuration
     static class TestConfig {
+
         @Bean
-        public LoanAppPath loanAppPath() {
-            return new LoanAppPath();
+        public GlobalExceptionFilter globalExceptionFilter() {
+            return new GlobalExceptionFilter();
         }
 
         @Bean
-        public UserPath userPath() {
-            return new UserPath();
+        public JwtAuthenticationFilter jwtAuthenticationFilter(
+                LoanAppPath loanAppPath,
+                AuthUseCase authUseCase,
+                UserPath userPath) {
+            return new JwtAuthenticationFilter(loanAppPath, authUseCase, userPath);
+        }
+
+        @Bean
+        public UserRequestMapper userRequestMapper() {
+            return new UserRequestMapper() {
+                @Override
+                public User toModel(UserRegisterRequest dto) {
+                    return User.builder()
+                            .firstName(dto.getFirstName())
+                            .lastName(dto.getLastName())
+                            .birthDate(dto.getBirthDate())
+                            .address(dto.getAddress())
+                            .phone(dto.getPhone())
+                            .email(dto.getEmail())
+                            .baseSalary(dto.getBaseSalary())
+                            .role(Role.builder().id(dto.getRoleId()).build())
+                            .build();
+                }
+            };
+        }
+
+        @Bean
+        public RequestValidator requestValidator(Validator validator) {
+            return new RequestValidator(validator);
+        }
+
+        @Bean
+        public Validator validator() {
+            return new org.springframework.validation.beanvalidation.LocalValidatorFactoryBean();
         }
     }
 }
