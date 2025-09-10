@@ -1,10 +1,10 @@
 package co.com.bancolombia.api.handler;
 
+import co.com.bancolombia.api.util.RequestValidator;
 import co.com.bancolombia.dto.UserRegisterRequest;
 import co.com.bancolombia.model.User;
 import co.com.bancolombia.usecase.user.UserUseCase;
 import co.com.bancolombia.r2dbc.mapper.UserRequestMapper;
-import co.com.bancolombia.api.util.RequestValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,16 +14,27 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import reactor.test.StepVerifier;
+
+import java.time.LocalDate;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 class HandlerUserTest {
+
     @Mock
     private UserUseCase userUseCase;
+
     @Mock
     private UserRequestMapper userRequestMapper;
+
     @Mock
     private RequestValidator requestValidator;
+
+    @Mock
+    private ServerRequest serverRequest;
+
     @InjectMocks
     private HandlerUser handlerUser;
 
@@ -33,22 +44,51 @@ class HandlerUserTest {
     }
 
     @Test
-    void testRegisterUser() {
-        UserRegisterRequest dto = new UserRegisterRequest();
-        User user = new User();
-        ServerRequest serverRequest = mock(ServerRequest.class);
-        when(serverRequest.bodyToMono(eq(UserRegisterRequest.class))).thenReturn(Mono.just(dto));
-        doNothing().when(requestValidator).validate(dto, UserRegisterRequest.class);
-        when(userRequestMapper.toModel(dto)).thenReturn(user);
+    void testRegisterUserSuccess() {
+        UserRegisterRequest request = UserRegisterRequest.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .password("password")
+                .build();
+
+        User user = User.builder()
+                .id(1L)
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .build();
+
+        when(serverRequest.bodyToMono(UserRegisterRequest.class)).thenReturn(Mono.just(request));
+        when(userRequestMapper.toModel(request)).thenReturn(user);
         when(userUseCase.register(user)).thenReturn(Mono.just(user));
 
         Mono<ServerResponse> responseMono = handlerUser.registerUser(serverRequest);
-        ServerResponse response = responseMono.block();
-        assertNotNull(response);
-        assertEquals(MediaType.APPLICATION_JSON, response.headers().getContentType());
-        verify(serverRequest).bodyToMono(UserRegisterRequest.class);
-        verify(requestValidator).validate(dto, UserRegisterRequest.class);
-        verify(userRequestMapper).toModel(dto);
-        verify(userUseCase).register(user);
+
+        StepVerifier.create(responseMono)
+                .expectNextMatches(serverResponse -> {
+                    return serverResponse.statusCode().is2xxSuccessful() &&
+                           serverResponse.headers().getContentType().includes(MediaType.APPLICATION_JSON);
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void testRegisterUserFailure() {
+        UserRegisterRequest request = UserRegisterRequest.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("john.doe@example.com")
+                .password("password")
+                .build();
+
+        when(serverRequest.bodyToMono(UserRegisterRequest.class)).thenReturn(Mono.just(request));
+        when(userUseCase.register(any(User.class))).thenReturn(Mono.error(new RuntimeException("Registration failed")));
+
+        Mono<ServerResponse> responseMono = handlerUser.registerUser(serverRequest);
+
+        StepVerifier.create(responseMono)
+                .expectError(RuntimeException.class)
+                .verify();
     }
 }

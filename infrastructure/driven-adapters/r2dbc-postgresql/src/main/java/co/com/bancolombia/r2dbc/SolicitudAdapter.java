@@ -14,13 +14,16 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class SolicitudAdapter implements SolicitudGateway {
 
     private final WebClient webClient;
+    private final String solicitudBaseUrl;
 
-    @Value("${microservices.solicitud.base-url:http://localhost:8081}")
-    private String solicitudBaseUrl;
+    public SolicitudAdapter(WebClient webClient,
+                            @Value("${microservices.solicitud.base-url:http://localhost:8081}") String solicitudBaseUrl) {
+        this.webClient = webClient;
+        this.solicitudBaseUrl = solicitudBaseUrl;
+    }
         @Override
         public <T, R> Mono<R> createSolicitud(T solicitudData, User authenticatedUser, Class<R> responseType) {
                 log.info("Creando solicitud para usuario: {}", authenticatedUser.getEmail());

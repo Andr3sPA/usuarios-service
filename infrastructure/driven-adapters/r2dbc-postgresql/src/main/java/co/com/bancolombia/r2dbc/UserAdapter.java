@@ -21,7 +21,7 @@ public class UserAdapter implements UserGateway {
     private final ReactiveRoleRepository roleRepo;
     private final UserMapper userMapper;
     private final RoleMapper roleMapper;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public Mono<User> register(User user) {

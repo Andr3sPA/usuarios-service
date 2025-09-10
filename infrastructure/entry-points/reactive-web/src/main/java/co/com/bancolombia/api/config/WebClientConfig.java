@@ -21,14 +21,18 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class WebClientConfig {
 
-    @Value("${microservices.timeout.connection:5000}")
-    private int connectionTimeout;
+    private final int connectionTimeout;
+    private final int readTimeout;
+    private final int writeTimeout;
 
-    @Value("${microservices.timeout.read:10000}")
-    private int readTimeout;
-
-    @Value("${microservices.timeout.write:10000}")
-    private int writeTimeout;
+    public WebClientConfig(
+            @Value("${microservices.timeout.connection:5000}") int connectionTimeout,
+            @Value("${microservices.timeout.read:10000}") int readTimeout,
+            @Value("${microservices.timeout.write:10000}") int writeTimeout) {
+        this.connectionTimeout = connectionTimeout;
+        this.readTimeout = readTimeout;
+        this.writeTimeout = writeTimeout;
+    }
 
     @Bean
     public WebClient webClient() {

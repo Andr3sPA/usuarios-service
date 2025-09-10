@@ -1,14 +1,16 @@
 package co.com.bancolombia.api.config;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Getter
-@Setter
 @Component
-@ConfigurationProperties(prefix = "routes.paths")
 public class LoanAppPath {
-    private String loanApplication;
+
+    private final String loanApplication;
+
+    public LoanAppPath(@Value("${routes.paths.loanApplication}") String loanApplication) {
+        this.loanApplication = loanApplication;
+    }
 }
