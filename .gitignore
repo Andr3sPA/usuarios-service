@@ -13,7 +13,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
-
+.env.docker
 # External tool builders
 .externalToolBuilders/
 
