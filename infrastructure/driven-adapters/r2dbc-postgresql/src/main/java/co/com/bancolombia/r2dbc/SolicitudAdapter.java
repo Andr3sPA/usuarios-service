@@ -37,6 +37,20 @@ public class SolicitudAdapter implements SolicitudGateway {
                                 .bodyValue(solicitudData)
                                 .exchangeToMono(response -> response.bodyToMono(responseType));
     }
+    @Override
+    public <T, R> Mono<R> calculateCapacity(T solicitudData, User authenticatedUser, Class<R> responseType) {
+        log.info("Creando solicitud para usuario: {}", authenticatedUser.getEmail());
+
+        return webClient.post()
+                .uri(solicitudBaseUrl + "/api/v1/calcular-capacidad")
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .header("X-User-Id", authenticatedUser.getId().toString())
+                .header("X-User-Email", authenticatedUser.getEmail())
+                .header("X-User-Role", authenticatedUser.getRole().getName())
+                .header("X-User-Salary", String.valueOf(authenticatedUser.getBaseSalary()))
+                .bodyValue(solicitudData)
+                .exchangeToMono(response -> response.bodyToMono(responseType));
+    }
 
         @Override
         public <R> Mono<R> getSolicitudes(Class<R> responseType,int page,int size) {

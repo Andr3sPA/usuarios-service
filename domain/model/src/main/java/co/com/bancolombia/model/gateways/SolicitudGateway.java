@@ -5,7 +5,7 @@ import co.com.bancolombia.model.User;
 import reactor.core.publisher.Mono;
 
 public interface SolicitudGateway {
-
+    public <T, R> Mono<R> calculateCapacity(T solicitudData, User authenticatedUser, Class<R> responseType);
     /**
      * Crea una solicitud en el microservicio externo
      * @param solicitudData Datos de la solicitud

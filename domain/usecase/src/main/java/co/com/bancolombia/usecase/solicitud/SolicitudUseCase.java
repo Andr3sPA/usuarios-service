@@ -21,7 +21,10 @@ public class SolicitudUseCase {
 
         return solicitudGateway.createSolicitud(solicitudData, authenticatedUser, responseType);
     }
+    public <T, R> Mono<R> calculateCapacity(T solicitudData, User authenticatedUser, Class<R> responseType) {
 
+        return solicitudGateway.calculateCapacity(solicitudData, authenticatedUser, responseType);
+    }
     /**
      * Obtiene una solicitud por ID
      * @return Mono con la solicitud encontrada

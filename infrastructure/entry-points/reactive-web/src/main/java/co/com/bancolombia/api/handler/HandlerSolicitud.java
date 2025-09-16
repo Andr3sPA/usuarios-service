@@ -40,7 +40,25 @@ public class HandlerSolicitud {
                 .doOnSuccess(response -> log.info("Solicitud creada exitosamente"))
                 .doOnError(error -> log.error("Error al crear solicitud", error));
     }
-
+    public Mono<ServerResponse> calculateCapacity(ServerRequest serverRequest) {
+        return authenticationUtil.getAuthenticatedUser(serverRequest)
+                .flatMap(user ->
+                        serverRequest.bodyToMono(JsonNode.class)
+                                .flatMap(solicitudData ->
+                                        solicitudUseCase.calculateCapacity(
+                                                solicitudData,
+                                                mapper.map(user, User.class),
+                                                JsonNode.class
+                                        )
+                                )
+                )
+                .flatMap(result -> ServerResponse
+                        .ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(result))
+                .doOnSuccess(response -> log.info("Capacidad calculada exitosamente"))
+                .doOnError(error -> log.error("Error al calcular capacidad", error));
+    }
     public Mono<ServerResponse> getSolicitudes(ServerRequest serverRequest) {
         int page = Integer.parseInt(serverRequest.queryParam("page").orElse("0"));
         int size = Integer.parseInt(serverRequest.queryParam("size").orElse("10"));

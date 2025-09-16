@@ -48,7 +48,7 @@ routes:
     logout: /api/v1/logout
     session: /api/v1/session
     loanApplication: /api/v1/solicitud
-
+    loanCapacity: /api/v1/calcular-capacidad
 adapters:
   restconsumer:
     timeout: 5000
