@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   usuarios-service:
     build:
@@ -9,18 +8,19 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - ../.env
+      - ../.env.docker
     networks:
       - backend
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin-usuarios
-    restart: unless-stopped
-    env_file:
-      - ../.env
+  prestamos-service:
+    build:
+      context: ../../prestamos-service
+      dockerfile: deployment/Dockerfile
+    container_name: prestamos-service
     ports:
-      - "8090:80"
+      - "8081:8081"
+    env_file:
+      - ../../prestamos-service/.env
     networks:
       - backend
 
