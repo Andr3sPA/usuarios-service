@@ -26,9 +26,9 @@ public class WebClientConfig {
     private final int writeTimeout;
 
     public WebClientConfig(
-            @Value("${microservices.timeout.connection:5000}") int connectionTimeout,
-            @Value("${microservices.timeout.read:10000}") int readTimeout,
-            @Value("${microservices.timeout.write:10000}") int writeTimeout) {
+            @Value("${microservices.timeout.connection:100000}") int connectionTimeout,
+            @Value("${microservices.timeout.read:600000}") int readTimeout,
+            @Value("${microservices.timeout.write:600000}") int writeTimeout) {
         this.connectionTimeout = connectionTimeout;
         this.readTimeout = readTimeout;
         this.writeTimeout = writeTimeout;
