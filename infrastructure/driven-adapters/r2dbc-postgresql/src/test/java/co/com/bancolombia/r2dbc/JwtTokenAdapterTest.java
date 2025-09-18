@@ -75,13 +75,14 @@ class JwtTokenAdapterTest {
 
     @Test
     void testValidateTokenWithInvalidToken() {
-        // Given
-        String invalidToken = "invalid.jwt.token";
+    // Given
+    // Un JWT bien formado pero con datos inválidos
+    String invalidToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpbnZhbGlkVXNlciIsInJvbGUiOiJVU0VSIiwidXNlcklkIjoxMjMsImlhdCI6MTYwOTYwODAwMCwiZXhwIjoxNjA5NjA4MDAwfQ.invalidsignature";
 
-        // When & Then
-        StepVerifier.create(jwtTokenAdapter.validateToken(invalidToken))
-                .expectError(RuntimeException.class)
-                .verify();
+    // When & Then
+    StepVerifier.create(jwtTokenAdapter.validateToken(invalidToken))
+        .expectError(RuntimeException.class)
+        .verify();
     }
 
     @Test
@@ -128,12 +129,12 @@ class JwtTokenAdapterTest {
 
     @Test
     void testIsTokenExpiredWithInvalidToken() {
-        // Given
-        String invalidToken = "invalid.jwt.token";
+    // Given
+    String invalidToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpbnZhbGlkVXNlciIsInJvbGUiOiJVU0VSIiwidXNlcklkIjoxMjMsImlhdCI6MTYwOTYwODAwMCwiZXhwIjoxNjA5NjA4MDAwfQ.invalidsignature";
 
-        // When & Then
-        StepVerifier.create(jwtTokenAdapter.isTokenExpired(invalidToken))
-                .expectNext(true)
-                .verifyComplete();
+    // When & Then
+    StepVerifier.create(jwtTokenAdapter.isTokenExpired(invalidToken))
+        .expectNext(true)
+        .verifyComplete();
     }
 }

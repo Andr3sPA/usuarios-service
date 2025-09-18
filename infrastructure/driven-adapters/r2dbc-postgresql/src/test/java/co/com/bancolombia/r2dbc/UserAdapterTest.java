@@ -68,29 +68,57 @@ class UserAdapterTest {
                 .build();
 
         String encodedPassword = "encodedPassword";
+        Role expectedRole = Role.builder().id(1L).name("ROLE_USER").description("Usuario").build();
         User expectedUser = User.builder()
+                .id(null)
+                .firstName(null)
+                .lastName(null)
+                .birthDate(null)
+                .address(null)
+                .phone(null)
                 .email("test@example.com")
                 .password(encodedPassword)
-                .role(Role.builder().id(1L).build())
+                .baseSalary(null)
+                .role(expectedRole)
                 .build();
 
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(user.getEmail());
 
+        co.com.bancolombia.r2dbc.entity.RoleEntity roleEntity = new co.com.bancolombia.r2dbc.entity.RoleEntity();
+        roleEntity.setId(1L);
+        roleEntity.setName("ROLE_USER");
+        roleEntity.setDescription("Usuario");
+
         when(passwordEncoder.encode("password")).thenReturn(encodedPassword);
         when(userRepo.findByEmail(user.getEmail())).thenReturn(Mono.empty());
-        when(roleRepo.findById(user.getRole().getId())).thenReturn(Mono.just(new co.com.bancolombia.r2dbc.entity.RoleEntity()));
+        when(roleRepo.findById(user.getRole().getId())).thenReturn(Mono.just(roleEntity));
+        when(roleMapper.toModel(roleEntity)).thenReturn(expectedRole);
         when(userMapper.toEntity(any(User.class))).thenReturn(userEntity);
         when(userRepo.save(userEntity)).thenReturn(Mono.just(userEntity));
-        when(userMapper.toModel(userEntity)).thenReturn(expectedUser);
+        doReturn(expectedUser).when(userMapper).toModel(userEntity);
 
         StepVerifier.create(userAdapter.register(user))
-                .expectNext(expectedUser)
+                .assertNext(actualUser -> {
+                    assertEquals(expectedUser.getEmail(), actualUser.getEmail());
+                    assertEquals(expectedUser.getPassword(), actualUser.getPassword());
+                    assertEquals(expectedUser.getRole().getId(), actualUser.getRole().getId());
+                    assertEquals(expectedUser.getRole().getName(), actualUser.getRole().getName());
+                    assertEquals(expectedUser.getRole().getDescription(), actualUser.getRole().getDescription());
+                    assertEquals(expectedUser.getId(), actualUser.getId());
+                    assertEquals(expectedUser.getFirstName(), actualUser.getFirstName());
+                    assertEquals(expectedUser.getLastName(), actualUser.getLastName());
+                    assertEquals(expectedUser.getBirthDate(), actualUser.getBirthDate());
+                    assertEquals(expectedUser.getAddress(), actualUser.getAddress());
+                    assertEquals(expectedUser.getPhone(), actualUser.getPhone());
+                    assertEquals(expectedUser.getBaseSalary(), actualUser.getBaseSalary());
+                })
                 .verifyComplete();
 
         verify(passwordEncoder).encode("password");
         verify(userRepo).findByEmail(user.getEmail());
         verify(roleRepo).findById(user.getRole().getId());
+        verify(roleMapper).toModel(roleEntity);
         verify(userMapper).toEntity(any(User.class));
         verify(userRepo).save(userEntity);
         verify(userMapper).toModel(userEntity);

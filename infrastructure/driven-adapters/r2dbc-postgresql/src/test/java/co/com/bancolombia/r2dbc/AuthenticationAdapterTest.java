@@ -40,7 +40,9 @@ class AuthenticationAdapterTest {
     void authenticateUser_whenUserExistsAndPasswordMatches_shouldReturnToken() {
         String email = "test@example.com";
         String password = "password";
-        String encodedPassword = "$2a$10$encodedPassword"; // BCrypt encoded
+        // Generar un password codificado real con BCrypt
+        org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder encoder = new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
+        String encodedPassword = encoder.encode(password);
         String token = "jwt.token.here";
 
         User user = User.builder()
