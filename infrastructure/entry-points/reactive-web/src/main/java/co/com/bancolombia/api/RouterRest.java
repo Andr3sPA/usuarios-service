@@ -35,7 +35,6 @@ public class RouterRest {
     private final UserPath userPath;
     private final GlobalExceptionFilter globalExceptionFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
     @Bean
     @RouterOperations({
             @RouterOperation(

@@ -24,7 +24,8 @@ public class WebClientConfig {
     private final int connectionTimeout;
     private final int readTimeout;
     private final int writeTimeout;
-
+    @Value("${api.auth.key}")
+    private String apiKey;
     public WebClientConfig(
             @Value("${microservices.timeout.connection:100000}") int connectionTimeout,
             @Value("${microservices.timeout.read:600000}") int readTimeout,
@@ -45,6 +46,7 @@ public class WebClientConfig {
 
         return WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
+                .defaultHeader("X-API-KEY", apiKey)
                 .filter(logRequest())
                 .filter(logResponse())
                 .build();
