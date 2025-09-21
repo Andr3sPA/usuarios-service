@@ -20,7 +20,18 @@ services:
     ports:
       - "8081:8081"
     env_file:
-      - ../../prestamos-service/.env
+      - ../../prestamos-service/.env.docker
+    networks:
+      - backend
+  reportes-service:
+    build:
+      context: ../../reportes-service
+      dockerfile: deployment/Dockerfile
+    container_name: reportes-service
+    ports:
+      - "8082:8082"
+    env_file:
+      - ../../reportes-service/.env.docker
     networks:
       - backend
 

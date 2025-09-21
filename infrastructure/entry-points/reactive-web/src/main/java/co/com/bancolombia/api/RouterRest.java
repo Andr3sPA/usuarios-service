@@ -1,13 +1,11 @@
 package co.com.bancolombia.api;
 
 import co.com.bancolombia.api.config.LoanAppPath;
+import co.com.bancolombia.api.config.ReportsPath;
 import co.com.bancolombia.api.config.UserPath;
 import co.com.bancolombia.api.filter.GlobalExceptionFilter;
 import co.com.bancolombia.api.filter.JwtAuthenticationFilter;
-import co.com.bancolombia.api.handler.HandlerAuth;
-import co.com.bancolombia.api.handler.HandlerProtected;
-import co.com.bancolombia.api.handler.HandlerSolicitud;
-import co.com.bancolombia.api.handler.HandlerUser;
+import co.com.bancolombia.api.handler.*;
 import co.com.bancolombia.dto.LoginRequest;
 import co.com.bancolombia.dto.LoginResponse;
 import co.com.bancolombia.dto.UserRegisterRequest;
@@ -33,6 +31,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class RouterRest {
     private final LoanAppPath loanAppPath;
     private final UserPath userPath;
+    private final ReportsPath reportsPath;
     private final GlobalExceptionFilter globalExceptionFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     @Bean
@@ -123,7 +122,7 @@ public class RouterRest {
     public RouterFunction<ServerResponse> routerFunction(HandlerSolicitud handlerSolicitud,
                                                          HandlerUser handlerUser,
                                                          HandlerAuth handlerAuth,
-                                                         HandlerProtected handlerProtected) {
+                                                         HandlerProtected handlerProtected, HandlerReporte handlerReporte) {
         return route(POST(userPath.getRegister()), handlerUser::registerUser)
                 .andRoute(POST(userPath.getLogin()), handlerAuth::login)
                 .andRoute(POST(userPath.getLogout()), handlerAuth::logout)
@@ -132,6 +131,7 @@ public class RouterRest {
                 .andRoute(POST(loanAppPath.getLoanApplication()), handlerSolicitud::createSolicitud)
                 .andRoute(PUT(loanAppPath.getLoanApplication()), handlerSolicitud::updateSolicitud)
                 .andRoute(POST(loanAppPath.getLoanCapacity()), handlerSolicitud::calculateCapacity)
+                .andRoute(GET(reportsPath.getReports()), handlerReporte::getReportes)
                 .filter(globalExceptionFilter)
                 .filter(jwtAuthenticationFilter);
     }

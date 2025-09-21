@@ -47,6 +47,7 @@ routes:
     session: /api/v1/session
     loanApplication: /api/v1/solicitud
     loanCapacity: /api/v1/calcular-capacidad
+    reports: /api/v1/reportes
 adapters:
   restconsumer:
     timeout: 5000
@@ -70,6 +71,8 @@ springdoc:
 microservices:
   solicitud:
     base-url: ${SOLICITUD_SERVICE_URL}   # ← ahora viene del .env
+  reportes:
+    base-url: ${REPORTES_SERVICE_URL}     # ← ahora viene del .env
   timeout:
     connection: 5000
     read: 10000
