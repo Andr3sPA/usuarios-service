@@ -57,6 +57,11 @@ public class UseCasesConfigTest {
         }
 
         @Bean
+        public co.com.bancolombia.model.gateways.ReportesGateway reportesGateway() {
+            return Mockito.mock(co.com.bancolombia.model.gateways.ReportesGateway.class);
+        }
+
+        @Bean
         public MyUseCase myUseCase() {
             return new MyUseCase();
         }
